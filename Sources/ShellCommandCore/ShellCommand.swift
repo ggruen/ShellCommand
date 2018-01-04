@@ -25,6 +25,8 @@ open class ShellCommand {
     enum Error: Swift.Error {
         // Shell command exited with non-zero exit status
         case shellCommandFailed( _: String )
+        // No, or empty, command passed to run()
+        case noArgumentsPassed( _: String )
     }
 
     /// A ConsoleIOProtocol object, used to write output to STDOUT or STDERR by default.
@@ -59,6 +61,10 @@ open class ShellCommand {
      * - throws: `.shellCommandFailed(commandArgs)` if command returns non-zero exit status
      */
     open func run( _ commandArgs: [String] ) throws -> Void {
+        guard commandArgs.count > 0, !commandArgs[0].isEmpty else {
+            throw Error.noArgumentsPassed(commandArgs.joined(separator: " "))
+        }
+
         let process = Process()
 
         // Specify the directory in which the command should run

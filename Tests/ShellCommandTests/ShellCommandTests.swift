@@ -93,6 +93,25 @@ class ShellCommandTests: XCTestCase {
         XCTAssertEqual(fileContents, "hello file", "Command created file in /tmp")
     }
 
+    /// Given: No command or arguments passed
+    /// When: run is called
+    /// Then: a .noArgumentsPassed error is thrown
+    func testThrowsNoArgumentError() {
+        // Given
+        let command = ShellCommand()
+
+        // When
+        do {
+            try command.run([""])
+            XCTFail("Command throws an exception when no arguments passed")
+        } catch ShellCommand.Error.noArgumentsPassed {
+            XCTAssertTrue(true, "Command throws an exception when no arguments passed")
+        } catch let e {
+            XCTFail("Command threw incorrect error \(e)")
+        }
+
+    }
+
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {
