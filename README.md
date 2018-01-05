@@ -7,6 +7,9 @@ of a shell command.
     try command.run(["/bin/echo", "hello", "world"])
     // Run the next command in /somewhere/else
     command.currentDirectoryPath = "/somewhere/else"
+    command.run("echo \"hi there\" > a_file")
+    command.run([ "cat", "/somewhere/else/a_file" ])
+
 	// Implement your own class, or use CapturedIO, to catch what's sent to
 	// "writeMessage"
     command.io = CapturedIO()
@@ -18,6 +21,12 @@ Pass `run` a String and it'll run it with `bash`:
 
     // Send "hello world" to STDERR
     try command.run("echo \"hello world\" >&2")
+
+Pass `run` a [String] and it'll run the command directly:
+
+    // Send scary characters to STDOUT without shell interpolation
+    try command.run(["/bin/echo", "hello", "; rm /* @%&()##$$ scary!"])
+    // Outputs: hello ; rm /* @%&()##$$ scary!
 
 Run one-offs with convenient static methods:
 

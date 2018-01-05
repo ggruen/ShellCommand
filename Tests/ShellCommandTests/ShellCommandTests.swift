@@ -168,6 +168,23 @@ class ShellCommandTests: XCTestCase {
         XCTAssertEqual(stderr, "hello stderr", "Command output \"hello stderr\" to STDERR")
     }
 
+    /// Given: Command String array with dangerous shell characters
+    /// When: passed to command.run
+    /// Then: characters are taken literally, not interpreted by a shell
+    func testNoShellInterpolation() throws {
+        // Given
+        let commandArray = [ "/bin/echo", "*", ";", "echo \"ack\"" ]
+        let command = ShellCommand()
+        command.io = CapturedIO()
+
+        // When
+        XCTAssertNoThrow( try command.run(commandArray), "Command didn't throw an error" )
+
+        // Then
+        let output = (command.io as! CapturedIO).stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+        XCTAssertEqual(output, "* ; echo \"ack\"", "String array wasn't interpolated by a shell")
+    }
+
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {
