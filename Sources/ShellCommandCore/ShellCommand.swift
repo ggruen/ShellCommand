@@ -19,6 +19,25 @@ import Foundation
      try command.run(["/usr/bin/git", "add", "-A"])
      try command.run(["/usr/bin/git", "commit", "-m", "Broke everything"])
 
+ Pass `run` a String and it'll run it with `bash`:
+
+     // Send "hello world" to STDERR
+     try command.run("echo \"hello world\" >&2")
+
+ Quick-run convenience static methods:
+
+     // Initialize and call run with a single string. Command is passed to
+     // /bin/bash -c. Handy both for shorthand and for redirects.
+     try ShellCommand.run("echo \"hello world!\" > /tmp/somefile")
+
+     // This will send to STDERR.
+     try ShellCommand.run("echo \"hello world!\" >&2")
+
+     // Add a custom ConsoleIOProtocol object to capture output
+     let output = CapturedIO()
+     try ShellCommand.run("echo \"hello world!\" >&2", io: output)
+     print( output.stderr ) // Prints "hello world!"
+
  */
 open class ShellCommand {
 
@@ -104,6 +123,64 @@ open class ShellCommand {
             throw Error.shellCommandFailed(commandArgs.joined(separator: " "))
         }
 
+    }
+
+    /// Convenience method that allows you to pass a single-string command to
+    /// bash.
+    ///
+    /// Example:
+    ///
+    ///     // Say hello to STDERR
+    ///     command.run("echo \"hello world\" >&2")
+    ///
+    /// - parameter command: A string containing a bash shell command string
+    /// - throws: `Error.shellCommandFailed` if the underlying command returns a non-zero exit code
+    /// - throws: `Error.noArgumentsPassed` if called with an empty string
+    ///
+    open func run( _ command: String ) throws -> Void {
+        guard !command.isEmpty else {
+            throw Error.noArgumentsPassed(command)
+        }
+
+        try self.run( [ "/bin/bash", "-c", command ])
+    }
+
+    /// Comvenience static run method. Instantiates a default ShellCommand object and runs the passed command
+    /// using `/bin/bash -c`.
+    ///
+    /// Example:
+    ///
+    ///     ShellCommand.run("echo \"hello world\"")
+    ///
+    /// - parameter command: A string containing a bash shell command string
+    /// - throws: `Error.shellCommandFailed` if the underlying command returns a non-zero exit code
+    /// - throws: `Error.noArgumentsPassed` if called with an empty string
+    ///
+    open static func run( _ commandString: String ) throws -> Void {
+        let command = ShellCommand()
+        try command.run(commandString)
+    }
+
+    /// Convenience static run method with `io` argument. Instantiates a default ShellCommand object, sets the `io`
+    /// property to the passed `io` value, and runs the command string with `/bin/bash -c`
+    ///
+    /// Example:
+    ///
+    ///     let io = CapturedIO()
+    ///     ShellCommand.run( "echo \"hello world\" && echo \"hello error\" >&2", io: io )
+    ///     print( io.stdout ) // prints "hello world"
+    ///     print( io.stderr ) // prints "hello error"
+    ///
+    /// - parameter commandString: A string containing a bash shell command string
+    /// - parameter io: A ConsoleIOProtocol object to which output will be sent
+    /// - throws: `Error.shellCommandFailed` if the underlying command returns a non-zero exit code
+    /// - throws: `Error.noArgumentsPassed` if called with an empty string
+    ///
+    open static func run( _ commandString: String, io: ConsoleIOProtocol ) throws -> Void {
+        let command = ShellCommand()
+        command.io = io
+
+        try command.run(commandString)
     }
 
     /**

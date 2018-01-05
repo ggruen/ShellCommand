@@ -14,27 +14,27 @@ import Foundation
 ///     let command = ShellCommand()
 ///     command.io = CapturedIO()
 ///     try command.run(["echo", "hello", "world!"])
-///     print( command.io.queuedStdout ) // Prints "hello world!"
+///     print( command.io.stdout ) // Prints "hello world!"
 ///     // Handy for testing command output
-///     if let out = command.io.queuedStdout.range(of: "hello") {
+///     if let out = command.io.stdout.range(of: "hello") {
 ///         print "command said hello!"
 ///     }
 ///     // Captures STDERR separately.
-///     if let errors = command.io.queuedStderr {
+///     if let errors = command.io.stderr {
 ///         print( "Command sent some stuff to STDERR: \(errors) )
 ///     }
 open class CapturedIO: ConsoleIOProtocol {
-    var queuedStdout = ""
-    var queuedStderr = ""
+    var stdout = ""
+    var stderr = ""
 
     public init() {}
 
     open func writeMessage(message: String, to: OutputType = .standard) {
         switch to {
         case .standard:
-            queuedStdout += message
+            stdout += message
         case .error:
-            queuedStderr += message
+            stderr += message
         }
 
     }

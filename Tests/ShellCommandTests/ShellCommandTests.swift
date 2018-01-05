@@ -43,7 +43,7 @@ class ShellCommandTests: XCTestCase {
         try command.run(commandString)
 
         // Then
-        let output = (command.io as! CapturedIO).queuedStdout
+        let output = (command.io as! CapturedIO).stdout
             .trimmingCharacters(in: .whitespacesAndNewlines)
         XCTAssertEqual(output, "hello world", "Command output \"hello world\"")
     }
@@ -67,7 +67,7 @@ class ShellCommandTests: XCTestCase {
                          "Command didn't throw an error")
 
         // Then
-        let output = (command.io as! CapturedIO).queuedStderr
+        let output = (command.io as! CapturedIO).stderr
             .trimmingCharacters(in: .whitespacesAndNewlines)
         XCTAssertEqual(output, "hello error", "Command output \"hello error\"")
     }
@@ -110,6 +110,62 @@ class ShellCommandTests: XCTestCase {
             XCTFail("Command threw incorrect error \(e)")
         }
 
+    }
+
+    /// Given: Single string command instead of array
+    /// When: run() is called
+    /// Then: Command is executed with /bin/bash -c
+    func testRunsSingleStringCommand() throws {
+        // Given
+        let commandString = "echo \"hello error\" >&2"
+        let command = ShellCommand()
+        command.io = CapturedIO()
+
+        // When
+        try command.run(commandString)
+
+        // Then
+        let output = (command.io as! CapturedIO).stderr
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        XCTAssertEqual(output, "hello error", "Command output \"hello error\"")
+    }
+
+    /// Given: Command string or array
+    /// When: ShellCommand.run(string) is called
+    /// Then: Command runs as if you'd called command.run(string)
+    func testRunStaticMethod() throws {
+        // Given
+        let commandString = "echo \"hello file\" > /tmp/static_test_file"
+
+        // When
+        try ShellCommand.run(commandString)
+
+        // Then
+        let fileContents = try String(
+            contentsOfFile: "/tmp/static_test_file")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        try FileManager.default.removeItem(atPath: "/tmp/static_test_file")
+        XCTAssertEqual(fileContents, "hello file", "Static run created file in /tmp")
+    }
+
+    /// Given: command string and IO object
+    /// When: ShellCommand.run( command: commandString, io: customIO )
+    /// Then: Command runs
+    ///       STDOUT appears in customIO
+    ///       STDERR appears in customIO
+    func testRunStaticSendToIo() throws {
+        // Given
+        let commandString = "echo \"hello stderr\" >&2 && echo \"hello stdout\""
+        let io = CapturedIO()
+
+        // When
+        XCTAssertNoThrow( try ShellCommand.run(commandString, io: io), "Static run with IO didn't throw an error" )
+
+        // Then
+        let stdout = io.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+        XCTAssertEqual(stdout, "hello stdout", "Command output \"hello stdout\" to STDOUT")
+        let stderr = io.stderr.trimmingCharacters(in: .whitespacesAndNewlines)
+        XCTAssertEqual(stderr, "hello stderr", "Command output \"hello stderr\" to STDERR")
     }
 
     func testPerformanceExample() {
