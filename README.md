@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/ggruen/ShellCommand.svg?branch=master)](https://travis-ci.org/ggruen/ShellCommand)
-![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Linux-brightgreen.svg)
+![Platforms](https://img.shields.io/badge/platforms-MacOS%2010.10+%20%7C%20Linux-brightgreen.svg)
 [![Swift Package Manager Compatible](https://img.shields.io/badge/spm-compatible-brightgreen.svg?style=flat)](https://swift.org/package-manager)
+![Swift 4](https://img.shields.io/badge/Swift-4-brightgreen.svg)
 
 # ShellCommand
 
