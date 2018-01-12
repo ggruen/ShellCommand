@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/ggruen/ShellCommand.svg?branch=master)](https://travis-ci.org/ggruen/ShellCommand)
+![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Linux-brightgreen.svg)
+[![Swift Package Manager Compatible](https://img.shields.io/badge/spm-compatible-brightgreen.svg?style=flat)](https://swift.org/package-manager)
+
 # ShellCommand
 
 Represents a shell command and provides a means to run and redirect the output
@@ -42,6 +46,8 @@ Run one-offs with convenient static methods:
     try ShellCommand.run("echo \"hello world!\" >&2", io: output)
     print( output.stderr ) // Prints "hello world!"
 
+Developed for and tested on MacOS and Linux.
+
 # Installation
 
 This is a Swift Package Manager (SPM) package. Include this is your SPM file:
@@ -53,3 +59,32 @@ Then `import ShellCommand` at the top of your file.
 	import ShellCOmmand
 
 	ShellCommand.run("echo \"Hello World!\"")
+
+# Development
+
+## Get the source
+
+    git clone https://github.com/ggruen/ShellCommand.git
+    swift package update
+    swift package generate-xcodeproj
+
+And install [sourcery](https://github.com/krzysztofzablocki/Sourcery) if you
+don't already have it.
+
+## Edit
+
+    open -a Xcode.app ShellCommand.xcodeproj
+
+## Test
+
+    swift test
+
+## Make tests for Linux and commit
+
+    sourcery
+    git commit
+
+# See Also
+
+[SwiftShell](https://github.com/kareman/SwiftShell).  SwiftCommand handles
+things a little differently and is a bit lighter-weight.

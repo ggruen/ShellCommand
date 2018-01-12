@@ -1,4 +1,4 @@
-import Darwin // Gets us "exit"
+import Foundation // Gets us "exit"
 #if SWIFT_PACKAGE
 import ShellCommandCore
 #endif

@@ -87,7 +87,7 @@ class ShellCommandTests: XCTestCase {
 
         // Then
         let fileContents = try String(
-            contentsOfFile: "/tmp/thisisatestfileblah")
+            contentsOfFile: "/tmp/thisisatestfileblah", encoding: .utf8)
             .trimmingCharacters(in: .whitespacesAndNewlines)
         try FileManager.default.removeItem(atPath: "/tmp/thisisatestfileblah")
         XCTAssertEqual(fileContents, "hello file", "Command created file in /tmp")
@@ -142,7 +142,7 @@ class ShellCommandTests: XCTestCase {
 
         // Then
         let fileContents = try String(
-            contentsOfFile: "/tmp/static_test_file")
+            contentsOfFile: "/tmp/static_test_file", encoding: .utf8)
             .trimmingCharacters(in: .whitespacesAndNewlines)
         try FileManager.default.removeItem(atPath: "/tmp/static_test_file")
         XCTAssertEqual(fileContents, "hello file", "Static run created file in /tmp")
