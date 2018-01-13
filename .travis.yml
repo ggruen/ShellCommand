@@ -5,7 +5,7 @@ matrix:
   include:
     - os: linux
       before_install:
-        - sudo apt-get update -qq && sudo apt-get upgrade -qq
+        - sudo apt-get update -qq
         - eval "$(curl -sL https://apt.vapor.sh)"
         - sudo apt-get install swift
     - os: osx
